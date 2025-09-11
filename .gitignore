@@ -1,0 +1,30 @@
+@'
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env/
+venv/
+
+# Env & local
+.env
+.env.*
+*.sqlite3
+
+# Tools
+.pytest_cache/
+.mypy_cache/
+.coverage
+dist/
+build/
+
+# Editors
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+'@ | Out-File -FilePath .gitignore -Encoding utf8
