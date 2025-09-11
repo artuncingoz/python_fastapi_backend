@@ -8,4 +8,4 @@ Small REST API with auth, roles, background summarize job, SQL storage, and Dock
 - This README will include endpoint details after implementation.
 
 ## Quick Start (to be filled next milestones)
-'@ | Out-File -FilePath README.md -Encoding utf8
+'@ | Out-File -FilePath README.md -Encoding utf8 
