@@ -9,7 +9,8 @@ venv/
 
 # Env & local
 *.sqlite3
-
+.env*
+.env
 # Tools
 .pytest_cache/
 .mypy_cache/
