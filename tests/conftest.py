@@ -20,6 +20,9 @@ from app.deps import get_redis
 from app.db.base import Base
 from app.db.session import engine
 
+import os
+os.environ.setdefault("SUMMARIZER_BACKEND", "rule")
+
 @pytest.fixture(scope="session", autouse=True)
 def _create_db():
     # Create all tables on the test engine

@@ -20,7 +20,7 @@ def test_signup_login_create_note_flow():
     assert r.status_code == 200, r.text
     note_id = r.json()["id"]
 
-    # poll once — without a worker, status will likely be 'queued' (which we accept)
+    # poll once — without a worker, status will likely be 'queued'
     r = client.get(f"/api/v1/notes/{note_id}", headers=headers)
     assert r.status_code == 200, r.text
     assert r.json()["status"] in ("queued", "processing", "done", "failed")

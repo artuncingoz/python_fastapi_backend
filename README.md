@@ -1,6 +1,6 @@
 # Notes AI API (FastAPI + Postgres + Redis + RQ)
 
-Small REST API that authenticates users with JWT, stores notes in Postgres, and asynchronously “summarizes” them with an RQ worker (Redis queue). Ships with Docker Compose, Swagger UI, Alembic migrations, and basic tests.
+Small REST API that authenticates users with JWT, stores notes in Postgres, and asynchronously “summarizes” them with an RQ worker (Redis queue) and llm model(sshleifer-distilbart-cnn-12-6). Ships with Docker Compose, Swagger UI, Alembic migrations, and basic tests.
 
 ---
 # To start the app from 0
@@ -62,7 +62,7 @@ docker compose up -d --build
 
 ### 3) Use Swagger & test
 - Open: **http://localhost:8000/docs**
-- Login with seeded admin: `admin@example.com` / `Admin123!`
+- Login with seeded admin: `admin@example.com` / `1234`
 - Create a note (`POST /api/v1/notes`), then fetch (`GET /api/v1/notes/{id}`)
 
 ### 4) Logs (handy)
@@ -74,6 +74,9 @@ docker compose logs -f worker
 ---
 
 ## What the App Does
+Example note:
+
+Morning unfurled like a slow ribbon across the rooftops as kettles hissed, buses sighed, and sparrows rehearsed brave little arias on sagging wires. Keys clinked by doorways, screens woke, and bread steamed under butter’s bright rush. In the pause before meetings and messages, someone watered a fern, another tied a shoe, and a child asked why clouds move. Answers came gently: because wind wanders, because days begin, because we do, too. The kettle clicked; nearby, a bike bell chimed twice. Soft.
 
 ### Authentication & Tenancy
 - Email/password signup & login (bcrypt hashing)

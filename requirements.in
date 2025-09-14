@@ -12,3 +12,9 @@ redis==5.0.8
 rq==1.16.2
 tenacity==9.0.0
 python-dotenv==1.0.1
+
+
+# LLM summarizer (CPU)
+transformers==4.44.2
+torch==2.3.1
+sentencepiece==0.2.0   # needed by T5

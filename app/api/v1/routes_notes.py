@@ -4,6 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Header, Query
 from sqlalchemy.orm import Session
 from redis import Redis
 from rq import Queue
+from app.worker_jobs import summarize_note_job
+
+
 
 from app.schemas.note import NoteCreate, NoteOut, NoteStatus
 from app.schemas.admin import UserWithNotesOut
@@ -48,9 +51,8 @@ def create_note(
     db.refresh(note)
 
     # Enqueue background job
-    q = Queue(settings.rq_queue_name, connection=r)
-    q.enqueue("app.worker_jobs.summarize_note_job", note.id, job_timeout=300)
-
+    q = Queue("notes_summarize", connection=r)       
+    q.enqueue(summarize_note_job, note.id, job_timeout=600)
     return note
 
 

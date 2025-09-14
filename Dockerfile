@@ -1,3 +1,5 @@
+# Dockerfile
+
 FROM python:3.10-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -13,12 +15,38 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# ---- Bake the model at build time (offline at runtime) ----
+ARG SUMMARIZER_MODEL=sshleifer/distilbart-cnn-12-6
+ENV SUMMARIZER_MODEL=${SUMMARIZER_MODEL}
+
+# We create a safe folder name from the hub id, e.g. "sshleifer-distilbart-cnn-12-6"
+RUN python - <<'PY'
+import os
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+mid = os.environ.get("SUMMARIZER_MODEL", "t5-small")
+safe = mid.replace("/", "-")
+local_dir = f"/models/{safe}"
+os.makedirs(local_dir, exist_ok=True)
+tok = AutoTokenizer.from_pretrained(mid, cache_dir="/models", use_fast=True)
+mdl = AutoModelForSeq2SeqLM.from_pretrained(mid, cache_dir="/models")
+tok.save_pretrained(local_dir)
+mdl.save_pretrained(local_dir)
+print("Baked model:", mid, "->", local_dir)
+PY
+
+# Runtime env: force offline & tell code where the local model lives
+ENV HF_HUB_OFFLINE=1
+# Must match the baked folder above:
+ENV MODEL_LOCAL_DIR=/models/sshleifer-distilbart-cnn-12-6
+ENV SUMMARIZER_BACKEND=llm
+ENV SUM_MAX_INPUT_TOKENS=512
+ENV SUM_MAX_OUTPUT_TOKENS=128
+ENV SUM_MIN_OUTPUT_TOKENS=20
+
 COPY . .
 
-# make scripts executable & strip CRLF if they slipped in from Windows
 RUN chmod +x /app/start.sh /app/start_worker.sh && \
     sed -i 's/\r$//' /app/start.sh /app/start_worker.sh || true
 
 EXPOSE 8000
 CMD ["sh", "/app/start.sh"]
-
