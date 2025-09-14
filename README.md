@@ -62,7 +62,7 @@ docker compose up -d --build
 
 ### 3) Use Swagger & test
 - Open: **http://localhost:8000/docs**
-- Login with seeded admin: `admin@example.com` / `1234`
+- Login with seeded admin: `admin@example.com` / `Admin123!`
 - Create a note (`POST /api/v1/notes`), then fetch (`GET /api/v1/notes/{id}`)
 
 ### 4) Logs (handy)
