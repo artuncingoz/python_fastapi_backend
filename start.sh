@@ -2,7 +2,6 @@
 set -e
 
 echo "Waiting for Postgres at: $DATABASE_URL"
-# Wait up to 60s for DB to accept connections
 python - <<'PY'
 import os, sys, time
 from sqlalchemy import create_engine
