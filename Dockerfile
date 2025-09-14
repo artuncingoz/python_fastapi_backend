@@ -37,7 +37,8 @@ PY
 # Runtime env: force offline & tell code where the local model lives
 ENV HF_HUB_OFFLINE=1
 # Must match the baked folder above:
-ENV MODEL_LOCAL_DIR=/models/sshleifer-distilbart-cnn-12-6
+ARG SUMMARIZER_MODEL=sshleifer/distilbart-cnn-12-6
+ENV MODEL_LOCAL_DIR=/models/${SUMMARIZER_MODEL//\//-}
 ENV SUMMARIZER_BACKEND=llm
 ENV SUM_MAX_INPUT_TOKENS=512
 ENV SUM_MAX_OUTPUT_TOKENS=128
