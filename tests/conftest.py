@@ -2,39 +2,38 @@
 import os
 import sys
 import pathlib
-import pytest
-import fakeredis
 
-# Ensure project root (folder that contains "app/") is importable
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT))
 
-# Test env defaults
-os.environ.setdefault("ENV", "test")
+# Test env: in-memory SQLite, dummy Redis URL (not actually used)
 os.environ.setdefault("DATABASE_URL", "sqlite+pysqlite:///:memory:")
 os.environ.setdefault("REDIS_URL", "redis://localhost:6379/0")
+os.environ.setdefault("SUMMARIZER_BACKEND", "rule")  # keep tests fast & deterministic
+
+import pytest
+import fakeredis
 
 from app.main import app
 from app.deps import get_redis
 from app.db.base import Base
-from app.db.session import engine
+from app.db.session import engine, SessionLocal
 
-import os
-os.environ.setdefault("SUMMARIZER_BACKEND", "rule")
+def _fake_redis():
+    return fakeredis.FakeStrictRedis(decode_responses=True)
 
-@pytest.fixture(scope="session", autouse=True)
-def _create_db():
-    # Create all tables on the test engine
+@pytest.fixture(autouse=True, scope="session")
+def _create_schema_once():
     Base.metadata.create_all(bind=engine)
     yield
-    # Optionally drop after tests
-    # Base.metadata.drop_all(bind=engine)
+    Base.metadata.drop_all(bind=engine)
 
 @pytest.fixture(autouse=True)
-def _override_redis():
-    # Use real in-memory Redis with pipeline support so RQ enqueue works
-    fake = fakeredis.FakeStrictRedis(decode_responses=True)
-    app.dependency_overrides[get_redis] = lambda: fake
+def _db_session_clean():
+    yield
+
+@pytest.fixture(autouse=True)
+def _override_redis_dep():
+    app.dependency_overrides[get_redis] = _fake_redis
     yield
     app.dependency_overrides.pop(get_redis, None)
