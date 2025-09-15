@@ -50,14 +50,13 @@ TOKEN_ISSUER=notes-api
 # seed (first boot; idempotent)
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=Admin123!
-AGENT_COUNT=5
 ```
 
 ### 2) Start the stack
 ```bash
 docker compose up -d --build
 ```
-- API waits for Postgres, runs **Alembic migrations**, **seeds** 1 admin + 5 agents + sample notes, then starts
+- API waits for Postgres, runs **Alembic migrations**, **seeds** 1 admin  then starts
 - Worker starts and listens on the `notes_summarize` queue
 
 ### 3) Use Swagger & test
